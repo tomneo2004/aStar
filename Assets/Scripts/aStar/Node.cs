@@ -22,7 +22,7 @@ namespace NP.aStarPathfinding{
 		/**
 		 * The graph this node belong to
 		 **/
-		Graph _graph;
+		protected Graph _graph;
 
 		/**
 		 * Get the graph this node belong to
@@ -50,7 +50,7 @@ namespace NP.aStarPathfinding{
 		 * 
 		 * Specify connection type to undirect or direct. Default is Undirect
 		 **/
-		public Connection AddConnection(Node toNode, ConnectionType connType = ConnectionType.Undirect){
+		public virtual Connection AddConnection(Node toNode, ConnectionType connType = ConnectionType.Undirect){
 
 			if (toNode == null) {
 				#if DEBUG
@@ -91,7 +91,7 @@ namespace NP.aStarPathfinding{
 		/**
 		 * Find connection from this node to another node
 		 **/
-		public Connection FindConnection(Node toNode){
+		public virtual Connection FindConnection(Node toNode){
 
 			Connection found = null;
 
@@ -113,8 +113,13 @@ namespace NP.aStarPathfinding{
 		 * Remove connection from this node to another node
 		 * 
 		 * Specify connection type to undirect or direct. Default is Direct(one way)
+		 * 
+		 * Undirect will remove connection from this node to another node and also incoming connection
+		 * from another node.
+		 * 
+		 * Direct will only remove connection from this node to another node.
 		 **/
-		public void RemoveConnection(Node toNode, ConnectionType connType = ConnectionType.Direct){
+		public virtual void RemoveConnection(Node toNode, ConnectionType connType = ConnectionType.Direct){
 
 			int connIndex = -1;
 			int currIndex = 0;
@@ -152,5 +157,27 @@ namespace NP.aStarPathfinding{
 				
 		}
 
+		/**
+		 * Remove all connection from this node to other node.
+		 * As well as, all incoming connection from other node.
+		 * 
+		 * This is an convenient for remove all connections that are
+		 * related to this node
+		 **/
+		public virtual void RemoveAllConnections(){
+
+			Connection[] conns = _connections.ToArray ();
+
+			IEnumerator ie = conns.GetEnumerator ();
+			while (ie.MoveNext ()) {
+			
+				RemoveConnection (((Connection)ie.Current).To, ConnectionType.Undirect);
+			}
+
+			#if DEBUG
+			if(_connections.Count > 0)
+				Debug.LogError("Connections is not remove completely, fix this");
+			#endif
+		}
 	}
 }

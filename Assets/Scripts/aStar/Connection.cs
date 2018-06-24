@@ -9,7 +9,7 @@ namespace NP.aStarPathfinding{
 		/**
 		 * The node this connection connect from
 		 **/
-		Node _from;
+		protected Node _from;
 
 		/**
 		 * Get the node this connection connect from
@@ -19,7 +19,7 @@ namespace NP.aStarPathfinding{
 		/**
 		 * The node this connection connect to
 		 **/
-		Node _to;
+		protected Node _to;
 
 		/**
 		 * Get the node this connection connect to
