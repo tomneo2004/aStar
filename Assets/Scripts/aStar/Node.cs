@@ -39,6 +39,29 @@ namespace NP.aStarPathfinding{
 		 **/
 		public List<Connection> AllConnections{ get{ return _connections;}}
 
+		/**
+		 * Walkable boolean for this node
+		 **/
+		protected bool _walkable = true;
+
+		/**
+		 * Get walkable for this node
+		 * 
+		 * Set walkable for this node
+		 **/
+		public bool Walkable{
+
+			get{ 
+			
+				return _walkable;
+			}
+
+			set{
+			
+				_walkable = value;
+			}
+		}
+
 		public Node(Graph graph) : base(){
 
 			_graph = graph;

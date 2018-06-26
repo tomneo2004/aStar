@@ -6,7 +6,7 @@ using NP.aStarPathfinding;
 
 namespace NP.aStarPathfinding{
 
-	public class Graph : ObjectBase {
+	public abstract class Graph : ObjectBase {
 
 		/**
 		 * All nodes in this graph
@@ -75,5 +75,12 @@ namespace NP.aStarPathfinding{
 
 			return null;
 		}
+
+		/**
+		 * Generate graph
+		 * 
+		 * Subclass must override
+		 **/
+		public abstract void GenerateGraph ();
 	}
 }
