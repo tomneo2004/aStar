@@ -70,10 +70,8 @@ namespace NP.aStarPathfinding{
 
 		/**
 		 * Add connection from this node to another node
-		 * 
-		 * Specify connection type to undirect or direct. Default is Undirect
 		 **/
-		public virtual Connection AddConnection(Node toNode, ConnectionType connType = ConnectionType.Undirect){
+		public virtual Connection AddConnection(Node toNode){
 
 			if (toNode == null) {
 				#if DEBUG
@@ -102,11 +100,13 @@ namespace NP.aStarPathfinding{
 			_connections.Add(conn);
 
 			//if connection is undirect
+			/*
 			if (connType == ConnectionType.Undirect) {
 
 				//tell another node to add connection to this node but only one way
 				toNode.AddConnection (this, ConnectionType.Direct);
 			}
+			*/
 
 			return conn;
 		}
