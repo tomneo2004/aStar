@@ -17,7 +17,7 @@ namespace NP.aStarPathfinding{
 		Direct
 	}
 
-	public class Node : ObjectBase {
+	public abstract class Node : ObjectBase, IGizmoNodeDrawable {
 
 		/**
 		 * The graph this node belong to
@@ -60,6 +60,20 @@ namespace NP.aStarPathfinding{
 			
 				_walkable = value;
 			}
+		}
+
+		Color _drawColor;
+		public Color DrawColor{
+
+			get{ return _drawColor;}
+			set{ _drawColor = value;}
+		}
+
+		protected int _drawPriority = 1;
+		public int DrawPriority{
+
+			get{ return _drawPriority;}
+			set{ _drawPriority = value;}
 		}
 
 		public Node(Graph graph) : base(){
@@ -201,6 +215,11 @@ namespace NP.aStarPathfinding{
 			if(_connections.Count > 0)
 				Debug.LogError("Connections is not remove completely, fix this");
 			#endif
+		}
+
+		public virtual void DrawNodeGizmo(Vector2 center, float size){
+		
+			Gizmos.color = _drawColor;
 		}
 	}
 }

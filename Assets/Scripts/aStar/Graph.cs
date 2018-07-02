@@ -6,7 +6,7 @@ using NP.aStarPathfinding;
 
 namespace NP.aStarPathfinding{
 
-	public abstract class Graph : ObjectBase {
+	public abstract class Graph : ObjectBase, IGizmoGraphDrawable {
 
 		/**
 		 * All nodes in this graph
@@ -19,6 +19,20 @@ namespace NP.aStarPathfinding{
 		 * Return null if there is no nodes
 		 **/
 		public List<Node> AllNodes{ get{ return _nodes;}}
+
+		protected Color _drawColor;
+		public Color DrawColor{
+
+			get{ return _drawColor;}
+			set{ _drawColor = value;}
+		}
+
+		protected int _drawPriority = 1;
+		public int DrawPriority{
+
+			get{ return _drawPriority;}
+			set{ _drawPriority = value;}
+		}
 
 		public Graph() : base(){
 
@@ -62,6 +76,20 @@ namespace NP.aStarPathfinding{
 		}
 
 		/**
+		 * Remove all nodes from graph
+		 **/
+		public virtual void RemoveAllNodes(){
+
+			if (_nodes != null && _nodes.Count > 0) {
+
+				for (int i = 0; i < _nodes.Count; i++)
+					_nodes [i].RemoveAllConnections ();
+
+				_nodes.Clear ();
+			}
+		}
+
+		/**
 		 * Find node by node's id
 		 **/
 		public virtual Node FindNode(Guid nodeId){
@@ -82,5 +110,10 @@ namespace NP.aStarPathfinding{
 		 * Subclass must override
 		 **/
 		public abstract void GenerateGraph ();
+
+		public virtual void DrawGraphGizmo (){
+
+			Gizmos.color = _drawColor;
+		}
 	}
 }
