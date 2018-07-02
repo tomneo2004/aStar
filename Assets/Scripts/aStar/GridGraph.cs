@@ -99,13 +99,6 @@ namespace NP.aStarPathfinding{
 			}
 		}
 
-		/**
-	 * 2 dimensional array of grid node
-	 * 
-	 * Much faster to find node in grid graph
-	 **/
-		protected GridNode[][] _gridNode2D;
-
 		public GridGraph (Vector2 center) : base (){
 
 			_center = center;
@@ -165,27 +158,6 @@ namespace NP.aStarPathfinding{
 			Debug.LogWarning("Unable to find grid node, but given row and column is in grid graph. row:"+row +"column:"+col);
 			#endif
 			return null;
-		}
-
-		public override void AddNode (Node node)
-		{
-			base.AddNode (node);
-
-			//TODO add node to 2 dimensional array
-		}
-
-		public override void RemoveAllNodes ()
-		{
-			base.RemoveAllNodes ();
-
-			_gridNode2D = null;
-		}
-
-		public override void RemoveNode (Node node)
-		{
-			base.RemoveNode (node);
-
-			//TODO remove node from 2 dimensional array
 		}
 
 		public override void GenerateGraph ()
