@@ -99,6 +99,28 @@ namespace NP.aStarPathfinding{
 			}
 		}
 
+		/**
+		 * The LayerMask used to check if obstacle in grid node
+		 **/
+		protected int _collisionLayerMask;
+
+		/**
+		 * The LayerMask used to check if obstacle in grid node
+		 * 
+		 * Get LayerMask
+		 * 
+		 * Set LayerMask
+		 **/
+		public int collisionLayerMask{
+		
+			get{ return _collisionLayerMask;}
+
+			set{ 
+			
+				_collisionLayerMask = value;
+			}
+		}
+
 		public GridGraph (Vector2 center) : base (){
 
 			_center = center;
@@ -162,6 +184,8 @@ namespace NP.aStarPathfinding{
 
 		public override void GenerateGraph ()
 		{
+			base.GenerateGraph ();
+
 			for (int row = 0; row < _verticalNodes; row++) {
 
 				for (int col = 0; col < _horizontalNodes; col++) {
@@ -175,6 +199,23 @@ namespace NP.aStarPathfinding{
 					AddNode (n);
 
 					//TODO configure new grid node if it is walkable or not
+					Vector2 gridOffset = new Vector2 (_center.x - _horizontalNodes * _nodeSize / 2.0f, 
+						_center.y + _verticalNodes * _nodeSize / 2.0f);
+					Vector2 nodeCenter = new Vector2 (col * _nodeSize + _nodeSize / 2.0f + gridOffset.x,
+						-(row * _nodeSize + _nodeSize / 2.0f) + gridOffset.y);
+					
+					Collider2D[] results = Physics2D.OverlapBoxAll(nodeCenter, new Vector2(_nodeSize, _nodeSize),
+						0.0f, _collisionLayerMask);
+					if (results.Length > 0) {
+
+						n.Walkable = false;
+						n.DrawColor = Color.red;
+						n.DrawPriority = 0;
+
+					} else {
+
+						n.Walkable = true;
+					}
 
 					//connect this grid node to neighbour nodes
 					GridNode[] neighbours = new GridNode[8];

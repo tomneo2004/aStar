@@ -6,7 +6,7 @@ using NP.aStarPathfinding;
 
 namespace NP.aStarPathfinding{
 
-	public abstract class Graph : ObjectBase, IGizmoGraphDrawable {
+	public class Graph : ObjectBase, IGizmoGraphDrawable {
 
 		/**
 		 * All nodes in this graph
@@ -109,7 +109,11 @@ namespace NP.aStarPathfinding{
 		 * 
 		 * Subclass must override
 		 **/
-		public abstract void GenerateGraph ();
+		public virtual void GenerateGraph (){
+
+			if (_nodes != null)
+				_nodes.Clear ();
+		}
 
 		public virtual void DrawGraphGizmo (){
 

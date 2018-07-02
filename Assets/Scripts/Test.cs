@@ -8,10 +8,11 @@ public class Test : MonoBehaviour {
 	public int nodeWidth = 5;
 	public int nodeHeight = 5;
 	public float nodeSize = 5;
+	public LayerMask obstacleLayer;
 
 	public Color drawColor = Color.green;
 
-	GridNode pickedNode;
+	//GridNode pickedNode;
 
 	GridGraph grid;
 
@@ -23,6 +24,7 @@ public class Test : MonoBehaviour {
 		grid.HorizontalNode = nodeWidth;
 		grid.VerticalNodes = nodeHeight;
 		grid.NodeSize = nodeSize;
+		grid.collisionLayerMask = obstacleLayer.value;
 
 		grid.GenerateGraph ();
 
@@ -30,7 +32,7 @@ public class Test : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
+		/*
 		Vector2 worldPos = Camera.main.ScreenToWorldPoint (Input.mousePosition);
 		GridNode n = grid.FindNode (worldPos);
 		if (n != pickedNode) {
@@ -48,6 +50,7 @@ public class Test : MonoBehaviour {
 
 			pickedNode = n;
 		}
+		*/
 	}
 
 	void OnDrawGizmos(){

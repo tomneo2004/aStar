@@ -221,6 +221,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9363948dc08581f4a859f48ddd5e4bbc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  nodeWidth: 5
+  nodeHeight: 5
+  nodeSize: 1.5
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  drawColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!4 &1927104296
 Transform:
   m_ObjectHideFlags: 0
