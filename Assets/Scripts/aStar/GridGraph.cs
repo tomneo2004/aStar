@@ -129,7 +129,7 @@ namespace NP.aStarPathfinding{
 			}
 
 			//Convert position in world space into row and column
-			Vector2 convertPos = position - _center;
+			Vector2 convertPos = position - _center;//use (0,0) as origin position
 
 			int row = Mathf.FloorToInt ((gridHalfHeight - convertPos.y)/_nodeSize);
 			row = row >= _verticalNodes ? _verticalNodes - 1 : row;

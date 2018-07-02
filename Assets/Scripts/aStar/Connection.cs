@@ -26,10 +26,30 @@ namespace NP.aStarPathfinding{
 		 **/
 		public Node To{ get{ return _to;}}
 
-		public Connection(Node from, Node to) : base(){
+		/**
+		 * The cost of connection from "from node" to "to node"
+		 **/
+		protected int _cost;
+
+		/**
+		 * The cost of connection from "from node" to "to node"
+		 * 
+		 * Get cost of connection
+		 * 
+		 * Set cost of connection
+		 **/
+		public int cost{
+
+			get{ return _cost;}
+
+			set { _cost = value;}
+		}
+
+		public Connection(Node from, Node to, int cost = 1) : base(){
 
 			_from = from;
 			_to = to;
+			_cost = cost;
 		}
 
 	}
