@@ -182,6 +182,194 @@ namespace NP.aStarPathfinding{
 			return null;
 		}
 
+		//TODO has issue
+		public override Path FindPath (Vector2 start, Vector2 end)
+		{
+			//A* pathfinding
+			GridNode startNode = FindNode(start);
+			startNode.CameFrom = null;
+			GridNode endNode = FindNode (end);
+			GridNode foundNode = null;
+
+			if (startNode == null) {
+
+				#if DEBUG
+				Debug.LogError("Start position "+start+" is not in grid");
+				#endif
+				return null;
+			}
+
+			if (endNode == null) {
+			
+				#if DEBUG
+				Debug.LogError("End position "+end+" is not in grid");
+				#endif
+				return null;
+			}
+
+			List<GridNode> openNodes = new List<GridNode> ();
+			List<GridNode> closeNodes = new List<GridNode> ();
+
+			startNode.G = 0;
+			startNode.H = Findheuristic (startNode, endNode);
+			openNodes.Add (startNode);
+
+			while (openNodes.Count > 0) {
+
+				GridNode currentNode = null;
+				int lowestFIndex = 0;
+				float lowestF = 0;
+				for (int f = 0; f < openNodes.Count; f++) {
+
+					if (f == 0) {
+
+						lowestF = openNodes [f].F;
+						lowestFIndex = f;
+
+					} else if (openNodes [f].F < lowestF) {
+					
+						lowestF = openNodes [f].F;
+						lowestFIndex = f;
+					}
+				}
+				currentNode = openNodes [lowestFIndex];
+
+				string str = "";
+				foreach (GridNode n in openNodes)
+					str += n.F+",  ";
+				Debug.Log ("open node...\n"+str);
+
+				Debug.Log ("pick " + openNodes [lowestFIndex].F);
+
+				//current node is goal
+				if (currentNode.Id == endNode.Id) {
+
+					foundNode = currentNode;
+					break;
+				}
+
+				openNodes.RemoveAt (lowestFIndex);
+				closeNodes.Add (currentNode);
+
+				List<Connection> conns = currentNode.AllConnections;
+				for (int i = 0; i < conns.Count; i++) {
+
+					GridNode neighbourNode = (GridNode)conns [i].To;
+
+					//if neighbour node is in close node then ignore and continue
+					//next neighbour
+					bool closeContain = false;
+					for (int n = 0; n < closeNodes.Count; n++) {
+
+						if (closeNodes [n].Id == neighbourNode.Id) {
+							closeContain = true;
+							break;
+						}
+					}
+
+					if (!neighbourNode.Walkable)
+						continue;
+					if (closeContain)
+						continue;
+
+					bool update = false;
+
+					//find g score for this neighbour
+					float gScore = currentNode.G + conns [i].cost;
+
+					//add neighbour node to open node if it is not
+					//exist in open node and update neighbour node
+					bool openContain = false;
+					for (int o = 0; o < openNodes.Count; o++) {
+
+						if (openNodes [o].Id == neighbourNode.Id) {
+							openContain = true;
+							break;
+						}
+					}
+
+					if (!openContain) {
+						
+						openNodes.Add (neighbourNode);
+						update = true;
+					}
+
+					//new path is better and update neighbour node
+					if (gScore < neighbourNode.G)
+						update = true;
+
+					if (update) {
+
+						neighbourNode.G = gScore;
+						neighbourNode.H = Findheuristic (neighbourNode, endNode);
+						neighbourNode.CameFrom = currentNode;
+					}
+				}
+			}
+
+			//construct path
+			if (foundNode == null)
+				return null;
+			return ConstructPath(foundNode);
+		}
+
+		/**
+		 * //TODO will be changed
+		 **/
+		protected override float Findheuristic (Node startNode, Node endNode)
+		{
+			GridNode gStartNode = (GridNode)startNode;
+			GridNode gEndNode = (GridNode)endNode;
+
+			Vector2 graphTopLeft = new Vector2 (_center.x - _horizontalNodes * _nodeSize / 2.0f,
+				                       _center.y + _verticalNodes * _nodeSize / 2.0f);
+
+			Vector2 startPos = new Vector2 (graphTopLeft.x + gStartNode.Column * _nodeSize + _nodeSize / 2.0f, 
+				graphTopLeft.y - gStartNode.Row * _nodeSize - _nodeSize / 2.0f);
+
+			Vector2 endPos = new Vector2 (graphTopLeft.x + gEndNode.Column * _nodeSize + _nodeSize / 2.0f, 
+				graphTopLeft.y - gEndNode.Row * _nodeSize - _nodeSize / 2.0f);
+
+			float h = Mathf.Abs (startPos.x - endPos.x) + Mathf.Abs (startPos.y - endPos.y);
+
+			return h;
+		}
+
+		protected override Path ConstructPath (Node node)
+		{
+			//construct path
+			GridNode currentNode = (GridNode)node;
+			Path currentPath = null;
+
+			Vector2 graphTopLeft = new Vector2 (_center.x - _horizontalNodes * _nodeSize / 2.0f,
+				_center.y + _verticalNodes * _nodeSize / 2.0f);
+			
+			do {
+
+				Vector2 pathPos = new Vector2(graphTopLeft.x + currentNode.Column * _nodeSize + _nodeSize / 2.0f, 
+					graphTopLeft.y - currentNode.Row * _nodeSize - _nodeSize / 2.0f);
+
+				Path newPath = new Path(pathPos, currentNode);
+
+				if(currentPath != null){
+					currentPath.PreviousPath = newPath;
+					newPath.NextPath = currentPath;
+				}
+
+				currentPath = newPath;
+
+				GridNode parent = (GridNode)currentNode.CameFrom;
+
+				//make sure parent node is clean up
+				currentNode.CameFrom = null;
+
+				currentNode = parent;
+
+			} while(currentNode != null);
+
+			return currentPath;
+		}
+
 		public override void GenerateGraph ()
 		{
 			base.GenerateGraph ();

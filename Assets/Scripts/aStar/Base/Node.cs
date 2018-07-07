@@ -62,6 +62,86 @@ namespace NP.aStarPathfinding{
 			}
 		}
 
+		/**
+		 * G value
+		 **/
+		protected float _g = 0;
+
+		/**
+		 * Get g value
+		 * 
+		 * Set g value
+		 * 
+		 * When value is set f will automatic be updated
+		 **/
+		public float G{ 
+
+			get{ return _g;} 
+
+			set{
+
+				_g = value;
+				_f = _g + _h;
+			}
+		}
+
+		/**
+		 * A*
+		 * 
+		 * H value
+		 **/
+		protected float _h = 0;
+
+		/**
+		 * A*
+		 * 
+		 * Get h value
+		 * 
+		 * Set h value
+		 * 
+		 * When value is set f will automatic be updated
+		 **/
+		public float H{
+
+			get{ return _h;} 
+
+			set{
+
+				_h = value;
+				_f = _g + _h;
+			}
+		}
+
+		/**
+		 * A*
+		 * 
+		 * F value
+		 **/
+		protected float _f = 0;
+
+		/**
+		 * A*
+		 * 
+		 * Get f value
+		 **/
+		public float F{ 
+
+			get{ 
+
+				_f = _g + _h;
+				return _f;
+			}
+		}
+
+		/**
+		 * A*
+		 * 
+		 * Parent node in path
+		 * 
+		 * This is used for constrcut path
+		 **/
+		public Node CameFrom = null;
+
 		Color _drawColor;
 		public Color DrawColor{
 

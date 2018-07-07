@@ -6,7 +6,7 @@ using NP.aStarPathfinding;
 
 namespace NP.aStarPathfinding{
 
-	public class Graph : ObjectBase, IGizmoGraphDrawable {
+	public abstract class Graph : ObjectBase, IGizmoGraphDrawable {
 
 		/**
 		 * All nodes in this graph
@@ -103,6 +103,24 @@ namespace NP.aStarPathfinding{
 
 			return null;
 		}
+
+		/**
+		 * Find path
+		 **/
+		public abstract Path FindPath (Vector2 start, Vector2 end);
+
+		/**
+		 * //TODO provide more heuristic calculation
+		 * Find heuristic value
+		 **/
+		protected abstract float Findheuristic (Node startNode, Node endNode);
+
+		/**
+		 * Construct path
+		 * 
+		 * Node is the last node a* found in path
+		 **/
+		protected abstract Path ConstructPath (Node node);
 
 		/**
 		 * Generate graph

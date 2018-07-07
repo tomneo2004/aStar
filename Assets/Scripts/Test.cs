@@ -11,10 +11,16 @@ public class Test : MonoBehaviour {
 	public LayerMask obstacleLayer;
 
 	public Color drawColor = Color.green;
+	public TextMesh fScoreText;
+	List<TextMesh> allFScoreText = new List<TextMesh> ();
 
 	//GridNode pickedNode;
 
 	GridGraph grid;
+
+	Vector2 startPos;
+	Vector2 goalPos;
+	Path path;
 
 	// Use this for initialization
 	void Start () {
@@ -27,6 +33,17 @@ public class Test : MonoBehaviour {
 		grid.collisionLayerMask = obstacleLayer.value;
 
 		grid.GenerateGraph ();
+
+//		for (int i = 0; i < grid.AllNodes.Count; i++) {
+//
+//			Node n = grid.AllNodes [i];
+//
+//			TextMesh tm = Instantiate (fScoreText);
+//			tm.text = n.F.ToString ();
+//			tm.gameObject.SetActive (false);
+//
+//			allFScoreText.Add (tm);
+//		}
 
 	}
 	
@@ -51,6 +68,26 @@ public class Test : MonoBehaviour {
 			pickedNode = n;
 		}
 		*/
+
+		if (Input.GetMouseButtonDown (0)) {
+		
+			startPos = Camera.main.ScreenToWorldPoint (Input.mousePosition);
+			FindPath ();
+		}
+
+		if (Input.GetMouseButtonDown (1)) {
+
+			goalPos = Camera.main.ScreenToWorldPoint (Input.mousePosition);
+			FindPath ();
+		}
+	}
+
+	void FindPath(){
+
+		if (startPos == null || goalPos == null)
+			return;
+
+		path = grid.FindPath (startPos, goalPos);
 	}
 
 	void OnDrawGizmos(){
@@ -59,5 +96,52 @@ public class Test : MonoBehaviour {
 			grid.DrawColor = drawColor;
 			grid.DrawGraphGizmo ();
 		}
+
+		Vector3 cubeSize = new Vector3(0.3f,0.3f,0.3f);
+		if (startPos != null) {
+
+			Gizmos.color = Color.yellow;
+			Gizmos.DrawCube (startPos, cubeSize);
+		}
+
+		if (goalPos != null) {
+
+			Gizmos.color = Color.red;
+			Gizmos.DrawCube (goalPos, cubeSize);
+		}
+
+		if (path != null) {
+
+			Path currentPath = path;
+
+			Gizmos.color = Color.yellow;
+
+			while (currentPath.NextPath != null) {
+
+				Gizmos.DrawLine (currentPath.Position, currentPath.NextPath.Position);
+				currentPath = currentPath.NextPath;
+			}
+
+		}
+
+//		if (grid != null && grid.AllNodes != null) {
+//
+//			Vector2 graphTopLeft = new Vector2 (grid.Center.x - grid.HorizontalNode * grid.NodeSize / 2.0f,
+//				grid.Center.y + grid.VerticalNodes * grid.NodeSize / 2.0f);
+//			
+//			for (int i = 0; i < grid.AllNodes.Count; i++) {
+//
+//				GridNode n = (GridNode)grid.AllNodes [i];
+//
+//				Vector2 pos = new Vector2 (graphTopLeft.x + n.Column * grid.NodeSize + grid.NodeSize / 2.0f, 
+//					              graphTopLeft.y - n.Row * grid.NodeSize - grid.NodeSize / 2.0f);
+//
+//				TextMesh tm = allFScoreText [i];
+//				tm.gameObject.SetActive (true);
+//				tm.text = n.F.ToString ();
+//				tm.transform.position = pos;
+//			}
+//		}
+//			
 	}
 }
