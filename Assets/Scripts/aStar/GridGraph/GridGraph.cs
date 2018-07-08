@@ -156,9 +156,9 @@ namespace NP.aStarPathfinding{
 			return FindNode(row, column);
 		}
 
-		/**
-	 * Find node by given row and column 
-	 **/
+	   /**
+	 	* Find node by given row and column 
+		**/
 		public GridNode FindNode(int row, int col){
 
 			if (row < 0 || row >= _verticalNodes)
@@ -183,7 +183,9 @@ namespace NP.aStarPathfinding{
 			return null;
 		}
 
-		//TODO has issue
+		/**
+		 * Find Path
+		 **/
 		public override Path FindPath (Vector2 start, Vector2 end)
 		{
 			//A* pathfinding
