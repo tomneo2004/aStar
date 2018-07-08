@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using NP.aStarPathfinding;
+using NP.DataStructure;
 
 namespace NP.aStarPathfinding{
 	
@@ -207,7 +208,9 @@ namespace NP.aStarPathfinding{
 				return null;
 			}
 
-			List<GridNode> openNodes = new List<GridNode> ();
+			BinaryHeap<GridNode> openNodes = new BinaryHeap<GridNode>(delegate(GridNode parent, GridNode child) {
+				return parent.F >= parent.F;
+			});
 			List<GridNode> closeNodes = new List<GridNode> ();
 
 			startNode.G = 0;
@@ -216,30 +219,7 @@ namespace NP.aStarPathfinding{
 
 			while (openNodes.Count > 0) {
 
-				GridNode currentNode = null;
-				int lowestFIndex = 0;
-				float lowestF = 0;
-				for (int f = 0; f < openNodes.Count; f++) {
-
-					if (f == 0) {
-
-						lowestF = openNodes [f].F;
-						lowestFIndex = f;
-
-					} else if (openNodes [f].F < lowestF) {
-					
-						lowestF = openNodes [f].F;
-						lowestFIndex = f;
-					}
-				}
-				currentNode = openNodes [lowestFIndex];
-
-				string str = "";
-				foreach (GridNode n in openNodes)
-					str += n.F+",  ";
-				Debug.Log ("open node...\n"+str);
-
-				Debug.Log ("pick " + openNodes [lowestFIndex].F);
+				GridNode currentNode = openNodes.Priority;
 
 				//current node is goal
 				if (currentNode.Id == endNode.Id) {
@@ -248,7 +228,7 @@ namespace NP.aStarPathfinding{
 					break;
 				}
 
-				openNodes.RemoveAt (lowestFIndex);
+				openNodes.Remove ();
 				closeNodes.Add (currentNode);
 
 				List<Connection> conns = currentNode.AllConnections;
@@ -279,17 +259,10 @@ namespace NP.aStarPathfinding{
 
 					//add neighbour node to open node if it is not
 					//exist in open node and update neighbour node
-					bool openContain = false;
-					for (int o = 0; o < openNodes.Count; o++) {
+					if (!openNodes.Contain (neighbourNode, delegate(GridNode first, GridNode second) {
+						return (first.Id == second.Id);
+					})) {
 
-						if (openNodes [o].Id == neighbourNode.Id) {
-							openContain = true;
-							break;
-						}
-					}
-
-					if (!openContain) {
-						
 						openNodes.Add (neighbourNode);
 						update = true;
 					}
