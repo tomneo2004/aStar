@@ -208,6 +208,7 @@ namespace NP.aStarPathfinding{
 				return null;
 			}
 
+			//Use binary heap for open list to improve search performance
 			BinaryHeap<GridNode> openNodes = new BinaryHeap<GridNode>(delegate(GridNode parent, GridNode child) {
 				return parent.F >= parent.F;
 			});
