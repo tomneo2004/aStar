@@ -14,6 +14,8 @@ public class Test : MonoBehaviour {
 	public TextMesh fScoreText;
 	List<TextMesh> allFScoreText = new List<TextMesh> ();
 
+	public int agentSize = 1;
+
 	//GridNode pickedNode;
 
 	GridGraph grid;
@@ -25,7 +27,8 @@ public class Test : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-		grid = new GridGraph (new Vector2(transform.position.x, transform.position.y));
+//		grid = new GridGraph (new Vector2(transform.position.x, transform.position.y));
+		grid = new AAGraph (new Vector2(transform.position.x, transform.position.y));
 		grid.DrawColor = drawColor;
 		grid.HorizontalNode = nodeWidth;
 		grid.VerticalNodes = nodeHeight;
@@ -87,7 +90,7 @@ public class Test : MonoBehaviour {
 		if (startPos == null || goalPos == null)
 			return;
 
-		path = grid.FindPath (startPos, goalPos);
+		path = ((AAGraph)grid).FindPath (startPos, goalPos, agentSize);
 	}
 
 	void OnDrawGizmos(){
@@ -138,7 +141,8 @@ public class Test : MonoBehaviour {
 
 				TextMesh tm = allFScoreText [i];
 				tm.gameObject.SetActive (true);
-				tm.text = n.F.ToString ();
+//				tm.text = n.F.ToString ();
+				tm.text = ((AAGraph)grid).FindClearance(n).ToString();
 				tm.transform.position = pos;
 			}
 		}
