@@ -34,16 +34,16 @@ public class Test : MonoBehaviour {
 
 		grid.GenerateGraph ();
 
-//		for (int i = 0; i < grid.AllNodes.Count; i++) {
-//
-//			Node n = grid.AllNodes [i];
-//
-//			TextMesh tm = Instantiate (fScoreText);
-//			tm.text = n.F.ToString ();
-//			tm.gameObject.SetActive (false);
-//
-//			allFScoreText.Add (tm);
-//		}
+		for (int i = 0; i < grid.AllNodes.Count; i++) {
+
+			Node n = grid.AllNodes [i];
+
+			TextMesh tm = Instantiate (fScoreText);
+			tm.text = n.F.ToString ();
+			tm.gameObject.SetActive (false);
+
+			allFScoreText.Add (tm);
+		}
 
 	}
 	
@@ -124,24 +124,24 @@ public class Test : MonoBehaviour {
 
 		}
 
-//		if (grid != null && grid.AllNodes != null) {
-//
-//			Vector2 graphTopLeft = new Vector2 (grid.Center.x - grid.HorizontalNode * grid.NodeSize / 2.0f,
-//				grid.Center.y + grid.VerticalNodes * grid.NodeSize / 2.0f);
-//			
-//			for (int i = 0; i < grid.AllNodes.Count; i++) {
-//
-//				GridNode n = (GridNode)grid.AllNodes [i];
-//
-//				Vector2 pos = new Vector2 (graphTopLeft.x + n.Column * grid.NodeSize + grid.NodeSize / 2.0f, 
-//					              graphTopLeft.y - n.Row * grid.NodeSize - grid.NodeSize / 2.0f);
-//
-//				TextMesh tm = allFScoreText [i];
-//				tm.gameObject.SetActive (true);
-//				tm.text = n.F.ToString ();
-//				tm.transform.position = pos;
-//			}
-//		}
-//			
+		if (grid != null && grid.AllNodes != null) {
+
+			Vector2 graphTopLeft = new Vector2 (grid.Center.x - grid.HorizontalNode * grid.NodeSize / 2.0f,
+				grid.Center.y + grid.VerticalNodes * grid.NodeSize / 2.0f);
+			
+			for (int i = 0; i < grid.AllNodes.Count; i++) {
+
+				GridNode n = (GridNode)grid.AllNodes [i];
+
+				Vector2 pos = new Vector2 (graphTopLeft.x + n.Column * grid.NodeSize + grid.NodeSize / 2.0f, 
+					              graphTopLeft.y - n.Row * grid.NodeSize - grid.NodeSize / 2.0f);
+
+				TextMesh tm = allFScoreText [i];
+				tm.gameObject.SetActive (true);
+				tm.text = n.F.ToString ();
+				tm.transform.position = pos;
+			}
+		}
+			
 	}
 }

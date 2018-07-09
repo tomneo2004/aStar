@@ -212,7 +212,7 @@ namespace NP.aStarPathfinding{
 
 			//Use binary heap for open list to improve search performance
 			BinaryHeap<GridNode> openNodes = new BinaryHeap<GridNode>(delegate(GridNode parent, GridNode child) {
-				return parent.F >= parent.F;
+				return parent.F >= child.F;
 			});
 			List<GridNode> closeNodes = new List<GridNode> ();
 
@@ -255,7 +255,8 @@ namespace NP.aStarPathfinding{
 					if (closeContain)
 						continue;
 
-					bool update = false;
+					bool updateNieghbour = false;
+					bool addNeighbour = false;
 
 					//find g score for this neighbour
 					float gScore = currentNode.G + conns [i].cost;
@@ -266,20 +267,26 @@ namespace NP.aStarPathfinding{
 						return (first.Id == second.Id);
 					})) {
 
-						openNodes.Add (neighbourNode);
-						update = true;
+						addNeighbour = true;
+						updateNieghbour = true;
 					}
 
+					//neighbour is alrady in open list
 					//new path is better and update neighbour node
 					if (gScore < neighbourNode.G)
-						update = true;
+						updateNieghbour = true;
 
-					if (update) {
+					//check if neighbour need to be updated
+					if (updateNieghbour) {
 
 						neighbourNode.G = gScore;
 						neighbourNode.H = Findheuristic (neighbourNode, endNode);
 						neighbourNode.CameFrom = currentNode;
 					}
+
+					//check if neighbour need to be added to open list
+					if (addNeighbour)
+						openNodes.Add (neighbourNode);
 				}
 			}
 
