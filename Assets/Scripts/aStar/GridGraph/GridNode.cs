@@ -28,6 +28,25 @@ namespace NP.aStarPathfinding{
 		public int Column{ get{ return _column;}}
 
 		/**
+		 * Return center position of node in world space
+		 **/
+		public Vector2 Center{
+
+			get{ 
+			
+				GridGraph gGraph = (GridGraph)_graph;
+
+				Vector2 graphTopLeft = new Vector2 (gGraph.Center.x - gGraph.HorizontalNode * gGraph.NodeSize / 2.0f,
+					gGraph.Center.y + gGraph.VerticalNodes * gGraph.NodeSize / 2.0f);
+
+				Vector2 center = new Vector2(graphTopLeft.x + _column * gGraph.NodeSize + gGraph.NodeSize / 2.0f, 
+					graphTopLeft.y - _row * gGraph.NodeSize - gGraph.NodeSize / 2.0f);
+
+				return center;
+			}
+		}
+
+		/**
 	 * Get the reference to grid graph this node belong to
 	 **/
 		public GridGraph GridGraphRef{ 
