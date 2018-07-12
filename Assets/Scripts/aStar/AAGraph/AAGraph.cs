@@ -14,12 +14,18 @@ namespace NP.aStarPathfinding{
 		/**
 		 * Find path with clearance
 		 **/
-		public virtual Path FindPath (Vector2 start, Vector2 end, int agentSize = 1){
+		public virtual Path FindPath (Vector2 start, Vector2 end, float agentSize = 1.0f){
 			//A* pathfinding
-			GridNode startNode = FindNode(start);
+			bool pathFound = false;
+
+			//the last node that is cloesest to end node
+			AANode bestEndNode = null;
+
+			AANode startNode = (AANode)FindNode(start);
 			startNode.CameFrom = null;
-			GridNode endNode = FindNode (end);
-			GridNode foundNode = null;
+
+			AANode endNode = (AANode)FindNode (end);
+			endNode.CameFrom = null;
 
 			if (startNode == null) {
 
@@ -37,11 +43,18 @@ namespace NP.aStarPathfinding{
 				return null;
 			}
 
+			//if start node == end node
+			if (startNode.Id == endNode.Id) {
+				bestEndNode = startNode;
+				pathFound = true;
+				return ConstructPath (bestEndNode, startNode, agentSize);
+			}
+
 			//Use binary heap for open list to improve search performance
-			BinaryHeap<GridNode> openNodes = new BinaryHeap<GridNode>(delegate(GridNode parent, GridNode child) {
+			BinaryHeap<AANode> openNodes = new BinaryHeap<AANode>(delegate(AANode parent, AANode child) {
 				return parent.F >= child.F;
 			});
-			List<GridNode> closeNodes = new List<GridNode> ();
+			List<AANode> closeNodes = new List<AANode> ();
 
 			startNode.G = 0;
 			startNode.H = Findheuristic (startNode, endNode);
@@ -49,13 +62,25 @@ namespace NP.aStarPathfinding{
 
 			while (openNodes.Count > 0) {
 
-				GridNode currentNode = openNodes.Priority;
+				AANode currentNode = openNodes.Priority;
 
 				//current node is goal
 				if (currentNode.Id == endNode.Id) {
 
-					foundNode = currentNode;
+					bestEndNode = currentNode;
+					pathFound = true;
 					break;
+				}
+
+				if (bestEndNode == null) {
+				
+					bestEndNode = currentNode;
+
+				} else {
+
+					if (Vector2.Distance(currentNode.Center, endNode.Center) 
+						<= Vector2.Distance(bestEndNode.Center, endNode.Center))
+						bestEndNode = currentNode;
 				}
 
 				openNodes.Remove ();
@@ -64,7 +89,7 @@ namespace NP.aStarPathfinding{
 				List<Connection> conns = currentNode.AllConnections;
 				for (int i = 0; i < conns.Count; i++) {
 
-					GridNode neighbourNode = (GridNode)conns [i].To;
+					AANode neighbourNode = (AANode)conns [i].To;
 
 					//if neighbour node is in close node then ignore and continue
 					//next neighbour
@@ -82,9 +107,7 @@ namespace NP.aStarPathfinding{
 					if (closeContain)
 						continue;
 
-					int clearance = FindClearance (neighbourNode);
-
-					if (agentSize > clearance)
+					if (neighbourNode.Clearance < agentSize)
 						continue;
 
 					bool updateNieghbour = false;
@@ -95,7 +118,7 @@ namespace NP.aStarPathfinding{
 
 					//add neighbour node to open node if it is not
 					//exist in open node and update neighbour node
-					if (!openNodes.Contain (neighbourNode, delegate(GridNode first, GridNode second) {
+					if (!openNodes.Contain (neighbourNode, delegate(AANode first, AANode second) {
 						return (first.Id == second.Id);
 					})) {
 
@@ -123,53 +146,116 @@ namespace NP.aStarPathfinding{
 			}
 
 			//construct path
-			if (foundNode == null)
-				return null;
-			return ConstructPath(foundNode);
+			return ConstructPath(bestEndNode, startNode, agentSize);
 		}
 
-		public int FindClearance(GridNode node){
+		protected Path ConstructPath (AANode node, AANode startNode, float agentSize)
+		{
+			//construct path
+			AANode currentNode = node;
+			Path currentPath = null;
 
-			int clearance = 1;
-			int searchRow = node.Row + 1;
-			int searchCol = node.Column + 1;
+			Vector2 graphTopLeft = new Vector2 (_center.x - _horizontalNodes * _nodeSize / 2.0f,
+				_center.y + _verticalNodes * _nodeSize / 2.0f);
 
-			while (searchRow < _verticalNodes && searchCol < _horizontalNodes) {
+			do {
 
-				if (!FindNode (searchRow, searchCol).Walkable)
-					break;
+				int numNode = 1;
 
-				bool block = false;
+				if(agentSize >= _nodeSize)
+					numNode = Mathf.CeilToInt(agentSize / _nodeSize);
 
-				for (int v = searchRow; v >= node.Row; v--) {
+				Vector2 pathPos = new Vector2(graphTopLeft.x + currentNode.Column * _nodeSize + _nodeSize / 2.0f, 
+					graphTopLeft.y - currentNode.Row * _nodeSize - _nodeSize / 2.0f);
 
-					if (!FindNode (v, searchCol).Walkable) {
-						block = true;
-						break;
-					}
+				if(currentNode.Id != startNode.Id){
+
+					//find center point of path base on agent size
+					pathPos = new Vector2(graphTopLeft.x + currentNode.Column * _nodeSize + numNode * _nodeSize / 2.0f, 
+						graphTopLeft.y - currentNode.Row * _nodeSize -  numNode * _nodeSize / 2.0f);
 				}
 
-				if (block)
-					break;
+				Path newPath = new Path(pathPos, currentNode);
 
-				for (int h = searchCol; h >= node.Column; h--) {
-
-					if (!FindNode (searchRow, h).Walkable) {
-						block = true;
-						break;
-					}
+				if(currentPath != null){
+					currentPath.PreviousPath = newPath;
+					newPath.NextPath = currentPath;
 				}
 
-				if (block)
-					break;
+				currentPath = newPath;
 
-				clearance++;
-				searchRow++;
-				searchCol++;
+				AANode parent = (AANode)currentNode.CameFrom;
+
+				//make sure parent node is clean up
+				currentNode.CameFrom = null;
+
+				currentNode = parent;
+
+			} while(currentNode != null);
+
+			return currentPath;
+		}
+
+		public override void GenerateGraph ()
+		{
+			if (_nodes != null)
+				_nodes.Clear ();
+
+			for (int row = 0; row < _verticalNodes; row++) {
+
+				for (int col = 0; col < _horizontalNodes; col++) {
+
+					//create new grid node
+					AANode n = new AANode (this, row, col);
+					n.DrawColor = _drawColor;
+					n.DrawPriority = _drawPriority;
+
+					//add new grid node to grid graph
+					AddNode (n);
+
+					//TODO configure new grid node if it is walkable or not
+					Vector2 gridOffset = new Vector2 (_center.x - _horizontalNodes * _nodeSize / 2.0f, 
+						_center.y + _verticalNodes * _nodeSize / 2.0f);
+					Vector2 nodeCenter = new Vector2 (col * _nodeSize + _nodeSize / 2.0f + gridOffset.x,
+						-(row * _nodeSize + _nodeSize / 2.0f) + gridOffset.y);
+
+					Collider2D[] results = Physics2D.OverlapBoxAll(nodeCenter, new Vector2(_nodeSize, _nodeSize),
+						0.0f, _collisionLayerMask);
+					if (results.Length > 0) {
+
+						n.Walkable = false;
+						n.DrawColor = Color.red;
+						n.DrawPriority = 0;
+
+					} else {
+
+						n.Walkable = true;
+					}
+
+					//connect this grid node to neighbour nodes
+					AANode[] neighbours = new AANode[8];
+					neighbours[0] = (AANode)FindNode(row, col - 1);//Left
+					neighbours[1] = (AANode)FindNode (row - 1, col);//Top
+					neighbours[2] = (AANode)FindNode (row, col + 1);//Right
+					neighbours[3] = (AANode)FindNode (row + 1, col);//Bottom
+					neighbours[4] = (AANode)FindNode (row - 1, col - 1);//TopLeft
+					neighbours[5] = (AANode)FindNode (row - 1, col + 1);//TopRight
+					neighbours[6] = (AANode)FindNode (row + 1, col + 1);//BottomRight
+					neighbours[7] = (AANode)FindNode (row + 1, col - 1);//BottomLeft
+
+					for (int i = 0; i < neighbours.Length; i++) {
+
+						AANode neighbourNode = neighbours [i];
+
+						if (neighbourNode != null) {
+
+							//add connection both way
+							n.AddConnection (neighbourNode);
+							neighbourNode.AddConnection (n);
+						}
+					}
+				}
 			}
-
-			return clearance;
-
 		}
 	}
 }

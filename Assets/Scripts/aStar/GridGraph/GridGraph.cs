@@ -189,7 +189,10 @@ namespace NP.aStarPathfinding{
 		public override Path FindPath (Vector2 start, Vector2 end)
 		{
 			//A* pathfinding
-			GridNode foundNode = null;
+			bool pathFound = false;
+
+			//the last node that is cloesest to end node
+			GridNode bestEndNode = null;
 
 			//find start node
 			GridNode startNode = FindNode(start);
@@ -202,7 +205,7 @@ namespace NP.aStarPathfinding{
 			//refine end node because end node might be in 
 			//unwalkable node thus we need to find
 			//best node between start and end node
-			endNode = FindApproximateEndNode (startNode, endNode);
+			//endNode = FindApproximateEndNode (startNode, endNode);
 
 			if (startNode == null) {
 
@@ -222,8 +225,10 @@ namespace NP.aStarPathfinding{
 
 			//if start node == end node
 			if (startNode.Id == endNode.Id) {
-				foundNode = startNode;
-				return ConstructPath (foundNode);
+				
+				bestEndNode = startNode;
+				pathFound = true;
+				return ConstructPath (bestEndNode);
 			}
 
 			//Use binary heap for open list to improve search performance
@@ -243,8 +248,20 @@ namespace NP.aStarPathfinding{
 				//current node is goal
 				if (currentNode.Id == endNode.Id) {
 
-					foundNode = currentNode;
+					bestEndNode = currentNode;
+					pathFound = true;
 					break;
+				}
+
+				if (bestEndNode == null) {
+
+					bestEndNode = currentNode;
+
+				} else {
+
+					if (Vector2.Distance(currentNode.Center, endNode.Center) 
+						<= Vector2.Distance(bestEndNode.Center, endNode.Center))
+						bestEndNode = currentNode;
 				}
 
 				openNodes.Remove ();
@@ -307,70 +324,68 @@ namespace NP.aStarPathfinding{
 			}
 
 			//construct path
-			if (foundNode == null)
-				return null;
-			return ConstructPath(foundNode);
+			return ConstructPath(bestEndNode);
 		}
 
 		/**
 		 * Return best end node if end node is in not walkable node
 		 **/
-		protected virtual GridNode FindApproximateEndNode(GridNode startNode, GridNode endNode){
-			
-			GridNode pickedNode = null;
-			bool hasNode = false;
-
-			int expend = 0;
-			while (hasNode == false) {
-			
-				//get possible around node
-				GridNode[] listNode = new GridNode[8];
-				listNode [0] = FindNode (endNode.Row - expend, endNode.Column);
-				listNode [1] = FindNode (endNode.Row, endNode.Column + expend);
-				listNode [2] = FindNode (endNode.Row + expend, endNode.Column);
-				listNode [3] = FindNode (endNode.Row, endNode.Column - expend);
-				listNode [4] = FindNode (endNode.Row - expend, endNode.Column + expend);
-				listNode [5] = FindNode (endNode.Row + expend, endNode.Column + expend);
-				listNode [6] = FindNode (endNode.Row + expend, endNode.Column - expend);
-				listNode [7] = FindNode (endNode.Row - expend, endNode.Column - expend);
-
-				for (int i = 0; i < listNode.Length; i++) {
-				
-					GridNode possibleNode = listNode [i];
-
-					//if node not null and walkable
-					if (possibleNode != null && possibleNode.Walkable) {
-
-
-						if (pickedNode == null) {
-						
-							//assign possbile node to picked node
-							pickedNode = possibleNode;
-
-						} else {
-
-							//compare distance of last picked node and possible node to start node
-							float pToS = Vector2.Distance (pickedNode.Center, endNode.Center) + 
-								Vector2.Distance(pickedNode.Center, startNode.Center);
-							float possToS = Vector2.Distance (possibleNode.Center, endNode.Center) +
-								Vector2.Distance(pickedNode.Center, startNode.Center);
-
-							if (possToS <= pToS) {
-								pickedNode = possibleNode;
-							}
-						}
-
-
-						hasNode = true;
-					}
-				}
-
-				//expend around area
-				expend++;
-			}
-
-			return pickedNode;
-		}
+//		protected virtual GridNode FindApproximateEndNode(GridNode startNode, GridNode endNode){
+//			
+//			GridNode pickedNode = null;
+//			bool hasNode = false;
+//
+//			int expend = 0;
+//			while (hasNode == false) {
+//			
+//				//get possible around node
+//				GridNode[] listNode = new GridNode[8];
+//				listNode [0] = FindNode (endNode.Row - expend, endNode.Column);
+//				listNode [1] = FindNode (endNode.Row, endNode.Column + expend);
+//				listNode [2] = FindNode (endNode.Row + expend, endNode.Column);
+//				listNode [3] = FindNode (endNode.Row, endNode.Column - expend);
+//				listNode [4] = FindNode (endNode.Row - expend, endNode.Column + expend);
+//				listNode [5] = FindNode (endNode.Row + expend, endNode.Column + expend);
+//				listNode [6] = FindNode (endNode.Row + expend, endNode.Column - expend);
+//				listNode [7] = FindNode (endNode.Row - expend, endNode.Column - expend);
+//
+//				for (int i = 0; i < listNode.Length; i++) {
+//				
+//					GridNode possibleNode = listNode [i];
+//
+//					//if node not null and walkable
+//					if (possibleNode != null && possibleNode.Walkable) {
+//
+//
+//						if (pickedNode == null) {
+//						
+//							//assign possbile node to picked node
+//							pickedNode = possibleNode;
+//
+//						} else {
+//
+//							//compare distance of last picked node and possible node to start node
+//							float pToS = Vector2.Distance (pickedNode.Center, endNode.Center) + 
+//								Vector2.Distance(pickedNode.Center, startNode.Center);
+//							float possToS = Vector2.Distance (possibleNode.Center, endNode.Center) +
+//								Vector2.Distance(pickedNode.Center, startNode.Center);
+//
+//							if (possToS <= pToS) {
+//								pickedNode = possibleNode;
+//							}
+//						}
+//
+//
+//						hasNode = true;
+//					}
+//				}
+//
+//				//expend around area
+//				expend++;
+//			}
+//
+//			return pickedNode;
+//		}
 
 		/**
 		 * //TODO will be changed
@@ -431,7 +446,8 @@ namespace NP.aStarPathfinding{
 
 		public override void GenerateGraph ()
 		{
-			base.GenerateGraph ();
+			if (_nodes != null)
+				_nodes.Clear ();
 
 			for (int row = 0; row < _verticalNodes; row++) {
 

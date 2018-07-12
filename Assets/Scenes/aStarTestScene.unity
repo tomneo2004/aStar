@@ -375,6 +375,11 @@ Prefab:
       propertyPath: m_Name
       value: Wall (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 61499520580256260, guid: 9d47eb06561e7b04e8a1930f72b39e41,
+        type: 2}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9d47eb06561e7b04e8a1930f72b39e41, type: 2}
   m_IsPrefabParent: 0
@@ -555,6 +560,11 @@ Prefab:
       propertyPath: m_Name
       value: Wall (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 61499520580256260, guid: 9d47eb06561e7b04e8a1930f72b39e41,
+        type: 2}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9d47eb06561e7b04e8a1930f72b39e41, type: 2}
   m_IsPrefabParent: 0
@@ -594,6 +604,7 @@ MonoBehaviour:
   drawColor: {r: 0, g: 1, b: 0, a: 1}
   fScoreText: {fileID: 102254385203203294, guid: 945cd68c047dde1409ceedab91b09e34,
     type: 2}
+  agentSize: 0.6
 --- !u!4 &1927104296
 Transform:
   m_ObjectHideFlags: 0
@@ -649,6 +660,11 @@ Prefab:
     - target: {fileID: 1264400405655806, guid: 9d47eb06561e7b04e8a1930f72b39e41, type: 2}
       propertyPath: m_Name
       value: Wall (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 61499520580256260, guid: 9d47eb06561e7b04e8a1930f72b39e41,
+        type: 2}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9d47eb06561e7b04e8a1930f72b39e41, type: 2}

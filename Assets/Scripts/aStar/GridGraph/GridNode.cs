@@ -10,7 +10,7 @@ namespace NP.aStarPathfinding{
 		/**
 	 * Row of this node in grid
 	 **/
-		int _row = 0;
+		protected int _row = 0;
 
 		/**
 	 * Get row of this node in grid
@@ -20,7 +20,7 @@ namespace NP.aStarPathfinding{
 		/**
 	 * Column of this node in grid
 	 **/
-		int _column = 0;
+		protected int _column = 0;
 
 		/**
 	 * Get column of this node in grid

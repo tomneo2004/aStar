@@ -127,11 +127,7 @@ namespace NP.aStarPathfinding{
 		 * 
 		 * Subclass must override
 		 **/
-		public virtual void GenerateGraph (){
-
-			if (_nodes != null)
-				_nodes.Clear ();
-		}
+		public abstract void GenerateGraph ();
 
 		public virtual void DrawGraphGizmo (){
 
