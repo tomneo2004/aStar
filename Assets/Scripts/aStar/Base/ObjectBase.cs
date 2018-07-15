@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace NP.aStarPathfinding{
 
-	public class ObjectBase {
+	public class ObjectBase : object {
 
 		/**
 	 * Unique id.

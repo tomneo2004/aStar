@@ -17,6 +17,8 @@ namespace NP.aStarPathfindingEditor{
 		protected SerializedProperty p_NodeSize;
 		protected SerializedProperty p_ObstacleLayer;
 
+		bool centerFoldout = false;
+
 		public virtual void OnEnable(){
 
 			p_NodeWidth = serializedObject.FindProperty ("nodeWidth");
@@ -35,9 +37,31 @@ namespace NP.aStarPathfindingEditor{
 				InternalEditorUtility.layers);
 		}
 
-		protected override void DrawSceneGUI ()
-		{
-			
+		protected override void DrawSceneGUI (){
+
+			base.DrawSceneGUI ();
+		}
+
+		protected override void DrawGraphVisual (Graph graph){
+
+			base.DrawGraphVisual (graph);
+		}
+
+		protected override void DrawGraphInformation (Graph graph){
+
+			base.DrawGraphInformation (graph);
+
+			GridGraph grid = (GridGraph)graph;
+
+			EditorGUI.indentLevel += 1;
+			if (centerFoldout = EditorGUILayout.Foldout (centerFoldout, "Graph Center")) {
+
+				EditorGUI.indentLevel += 1;
+				EditorGUILayout.LabelField ("X:" + grid.Center.x);
+				EditorGUILayout.LabelField ("Y:" + grid.Center.y);
+				EditorGUI.indentLevel -= 1;
+			}
+			EditorGUI.indentLevel -= 1;
 		}
 
 	}

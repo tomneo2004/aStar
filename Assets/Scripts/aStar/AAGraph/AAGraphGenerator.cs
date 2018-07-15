@@ -3,28 +3,33 @@ using System.Collections.Generic;
 using UnityEngine;
 using NP.aStarPathfinding;
 
-public class AAGraphGenerator : GridGraphGenerator {
+namespace NP.aStarPathfinding{
 
-	public AAGraph AAGraph{ get{ return GetGraphByType<AAGraph> ();}}
 
-	void Start(){
-	}
+	public class AAGraphGenerator : GridGraphGenerator {
 
-	// Update is called once per frame
-	void Update () {
-		
-	}
-		
-	public override void GenerateGraph ()
-	{
-		_graph = new AAGraph (new Vector2(transform.position.x, transform.position.y));
-		AAGraph tempGraph = (AAGraph)_graph;
+		public AAGraph AAGraph{ get{ return GetGraphByType<AAGraph> ();}}
 
-		tempGraph.HorizontalNode = nodeWidth;
-		tempGraph.VerticalNodes = nodeHeight;
-		tempGraph.NodeSize = nodeSize;
-		tempGraph.collisionLayerMask = obstacleLayer.value;
+		void Start(){
+		}
 
-		tempGraph.GenerateGraph ();
+		// Update is called once per frame
+		void Update () {
+
+		}
+
+		public override void GenerateGraph ()
+		{
+			AAGraph tempGraph = new AAGraph (new Vector2(transform.position.x, transform.position.y));
+			_graph = tempGraph;
+
+			tempGraph.HorizontalNode = nodeWidth;
+			tempGraph.VerticalNodes = nodeHeight;
+			tempGraph.NodeSize = nodeSize;
+			tempGraph.collisionLayerMask = obstacleLayer.value;
+
+			tempGraph.GenerateGraph ();
+		}
 	}
 }
+
