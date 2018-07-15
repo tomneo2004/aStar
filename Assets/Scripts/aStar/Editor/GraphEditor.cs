@@ -23,10 +23,21 @@ namespace NP.aStarPathfindingEditor{
 
 		public override void OnInspectorGUI (){
 
-			if(propertyFoldout = EditorGUILayout.Foldout(propertyFoldout, "Properties"))
+			GraphGenerator g = (GraphGenerator)target;
+
+			if (g.Graph == null) {
+
+				EditorGUILayout.HelpBox("There is no graph avaliable at moment\n" +
+					"To create new graph you need to modify Graph Properites and then click " +
+					"Generate Graph", MessageType.Warning);
+			}
+
+			if(propertyFoldout = EditorGUILayout.Foldout(propertyFoldout, 
+				new GUIContent("Graph Properties", "Graph's properties which can be modified before generating new graph")))
 				DrawProperties ();
 
-			if (informationFoldout = EditorGUILayout.Foldout (informationFoldout, "Information")) {
+			if (informationFoldout = EditorGUILayout.Foldout (informationFoldout,
+				new GUIContent("Graph Data", "All data information related to this graph"))) {
 
 				GraphGenerator gg = (GraphGenerator)serializedObject.targetObject;
 				if (gg != null && gg.Graph != null)
@@ -37,8 +48,9 @@ namespace NP.aStarPathfindingEditor{
 				}
 			}
 				
-
-			if (graphVisualFoldout = EditorGUILayout.Foldout (graphVisualFoldout, "Graph visual"))
+			if (graphVisualFoldout = EditorGUILayout.Foldout (graphVisualFoldout,
+				new GUIContent("Graph Visual Properties", "Graph's visual properties which can be customized\n" +
+					"Used to display graph visually in scene view")))
 				DrawGraphVisualProperties ();
 			
 			DrawMethodButton ();
