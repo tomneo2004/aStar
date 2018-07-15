@@ -19,6 +19,7 @@ namespace NP.aStarPathfindingEditor{
 		bool graphVisualFoldout = false;
 
 		protected Color graphColor = Color.green;
+		protected Color unwalkableGridColor = Color.red;
 
 		public override void OnInspectorGUI (){
 
@@ -45,27 +46,48 @@ namespace NP.aStarPathfindingEditor{
 			serializedObject.ApplyModifiedProperties ();
 		}
 
-		void OnSceneGUI(){
+		public void OnSceneGUI(){
 
-			GraphGenerator gg = (GraphGenerator)serializedObject.targetObject;
+			GraphGenerator gg = (GraphGenerator)target;
 			if (gg != null && gg.Graph != null)
 				DrawGraphVisual (gg.Graph);
 			
 			DrawSceneGUI ();
 		}
 
+		/**
+		 * Draw common properties of graph  which can be modified in inspector
+		 **/
 		protected virtual void DrawProperties (){
 		}
+
+		/**
+		 * Alternative of drawing in scene view
+		 **/
 		protected virtual void DrawSceneGUI (){
 		}
+
+		/**
+		 * Draw graph visual in scene view
+		 **/
 		protected virtual void DrawGraphVisual (Graph graph){
+
+			Handles.color = graphColor;
 		}
+
+		/**
+		 * Draw graph information in inspector
+		 **/
 		protected virtual void DrawGraphInformation (Graph graph){
 		}
 
+		/**
+		 * Draw graph visual properties which can be modified in inspector
+		 **/
 		protected virtual void DrawGraphVisualProperties(){
 
 			graphColor = EditorGUILayout.ColorField ("VisualColor", graphColor);
+			unwalkableGridColor = EditorGUILayout.ColorField ("UnwalkableColor", unwalkableGridColor);
 		}
 
 		protected virtual void DrawMethodButton(){
@@ -84,10 +106,13 @@ namespace NP.aStarPathfindingEditor{
 					if (GUILayout.Button (((ExposeMethodInEditor)attribute [0]).methodName)) {
 
 						((GraphGenerator)target).GenerateGraph ();
+						SceneView.RepaintAll ();
 					}
 				}
 			}
 		}
+
+
 	}
 }
 
