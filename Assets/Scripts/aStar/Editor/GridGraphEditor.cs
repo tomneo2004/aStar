@@ -8,6 +8,26 @@ using NP.aStarPathfindingEditor;
 
 namespace NP.aStarPathfindingEditor{
 
+	internal struct GridDrawer{
+	
+		Vector2 _center;
+		Color _color;
+		float _size;
+
+		public GridDrawer(Vector2 center, Color color, float size){
+		
+			_center = center;
+			_color = color;
+			_size = size;
+		}
+
+		public void Draw(){
+
+			Handles.color = _color;
+			Handles.DrawWireCube (_center, new Vector3 (_size, _size, 0.0f));
+		}
+	}
+
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(GridGraphGenerator))]
 	public class GridGraphEditor : GraphEditor {
@@ -17,6 +37,12 @@ namespace NP.aStarPathfindingEditor{
 		protected SerializedProperty p_NodeSize;
 
 		bool centerFoldout = false;
+		bool showUnwalkableGrid = true;
+
+		protected Color unwalkableGridColor = Color.red;
+
+		List<GridDrawer> walkableGrids = new List<GridDrawer>();
+		List<GridDrawer> unwalkableGrids = new List<GridDrawer>();
 
 		public virtual void OnEnable(){
 
@@ -28,12 +54,16 @@ namespace NP.aStarPathfindingEditor{
 
 		protected override void DrawProperties (){
 
-			p_NodeWidth.intValue = EditorGUILayout.IntField ("NodeWidth", p_NodeWidth.intValue);
-			p_NodeHeight.intValue = EditorGUILayout.IntField ("NodeHeight", p_NodeHeight.intValue);
-			p_NodeSize.floatValue = EditorGUILayout.FloatField ("NodeSize", p_NodeSize.floatValue);
+			p_NodeWidth.intValue = EditorGUILayout.IntField (new GUIContent("Node Width",
+			"Number of nodes in horizontal"), p_NodeWidth.intValue);
+			p_NodeHeight.intValue = EditorGUILayout.IntField (new GUIContent("Node Height",
+				"Number of nodes in vertical"), p_NodeHeight.intValue);
+			p_NodeSize.floatValue = EditorGUILayout.FloatField (new GUIContent("Node Size",
+				"Size of node"), p_NodeSize.floatValue);
 
 			GridGraphGenerator g = (GridGraphGenerator)target;
-			g.obstacleLayer = EditorUtil.LayerMaskField ("ObstacleLayer", g.obstacleLayer);
+			g.obstacleLayer = EditorUtil.LayerMaskField ("Obstacle Layer", g.obstacleLayer, "The layer which will be" +
+				" used in collision test and act as obstacle");
 		}
 
 		protected override void DrawSceneGUI (){
@@ -45,6 +75,9 @@ namespace NP.aStarPathfindingEditor{
 
 			base.DrawGraphVisual (graph);
 
+			walkableGrids.Clear ();
+			unwalkableGrids.Clear ();
+
 			GridGraph grid = (GridGraph)graph;
 
 			Vector2 graphTopLeft = new Vector2 (grid.Center.x - grid.HorizontalNode * grid.NodeSize / 2.0f,
@@ -55,17 +88,58 @@ namespace NP.aStarPathfindingEditor{
 
 				GridNode n = (GridNode)ie.Current;
 
-				if (n.Walkable)
-					Handles.color = graphColor;
-				else
-					Handles.color = unwalkableGridColor;
+				Color gColor = graphColor;
+				if (!n.Walkable)
+					gColor = unwalkableGridColor;
 
 				Vector2 nodeCenter = new Vector2 (graphTopLeft.x + n.Column * grid.NodeSize + grid.NodeSize / 2.0f,
 					                     graphTopLeft.y - n.Row * grid.NodeSize - grid.NodeSize / 2.0f);
 
-				Handles.DrawWireCube (nodeCenter, new Vector3 (grid.NodeSize, grid.NodeSize, 0.0f));
+				GridDrawer gd = new GridDrawer (nodeCenter, gColor, grid.NodeSize);
+
+				if (n.Walkable)
+					walkableGrids.Add (gd);
+				else {
+					if(showUnwalkableGrid)
+						unwalkableGrids.Add (gd);
+				}
 			}
-				
+
+			DrawGrid ();
+		}
+
+		private void DrawGrid(){
+
+			for (int i = 0; i < walkableGrids.Count; i++)
+				walkableGrids [i].Draw ();
+
+			for (int i = 0; i < unwalkableGrids.Count; i++)
+				unwalkableGrids [i].Draw ();
+		}
+
+		protected override void DrawGraphVisualProperties ()
+		{
+			base.DrawGraphVisualProperties ();
+
+			bool repaintScene = false;
+
+			bool showUnwalkable = EditorGUILayout.Toggle (new GUIContent ("Show Unwalkable Grid", "Show unwalkable grid" +
+			" in grid graph"), showUnwalkableGrid);
+
+			if (showUnwalkable != showUnwalkableGrid) {
+
+				showUnwalkableGrid = showUnwalkable;
+				repaintScene = true;
+			}
+
+			if (showUnwalkableGrid) {
+				EditorGUI.indentLevel += 1;
+				unwalkableGridColor = EditorGUILayout.ColorField ("Unwalkable Color", unwalkableGridColor);
+				EditorGUI.indentLevel -= 1;
+			}
+
+			if (repaintScene)
+				SceneView.RepaintAll ();
 		}
 
 		protected override void DrawGraphInformation (Graph graph){
@@ -75,7 +149,8 @@ namespace NP.aStarPathfindingEditor{
 			GridGraph grid = (GridGraph)graph;
 
 			EditorGUI.indentLevel += 1;
-			if (centerFoldout = EditorGUILayout.Foldout (centerFoldout, "Graph Center")) {
+			if (centerFoldout = EditorGUILayout.Foldout (centerFoldout, 
+				new GUIContent("Graph Center", "Graph's center"))) {
 
 				EditorGUI.indentLevel += 1;
 				EditorGUILayout.LabelField ("X:" + grid.Center.x);

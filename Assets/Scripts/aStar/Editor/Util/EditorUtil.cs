@@ -8,7 +8,12 @@ public class EditorUtil {
 
 	//contain index of layer
 	static List<int> layerNumbers = new List<int> ();
-	public static LayerMask LayerMaskField(string label, LayerMask layerMask){
+	/**
+	 * Create LayerMask fild GUI
+	 * 
+	 * Return selected LayerMask
+	 **/
+	public static LayerMask LayerMaskField(string label, LayerMask layerMask, string desc = ""){
 	
 		string[] layers = InternalEditorUtility.layers;
 
@@ -27,7 +32,7 @@ public class EditorUtil {
 				maskWithoutEmpty |= 1 << i;
 		}
 
-		maskWithoutEmpty = EditorGUILayout.MaskField (label, maskWithoutEmpty, layers);
+		maskWithoutEmpty = EditorGUILayout.MaskField (new GUIContent(label, desc), maskWithoutEmpty, layers);
 
 		int mask = 0;
 		for (int i = 0; i < layerNumbers.Count; i++) {

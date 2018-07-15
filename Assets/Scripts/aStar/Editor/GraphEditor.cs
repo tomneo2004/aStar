@@ -19,7 +19,7 @@ namespace NP.aStarPathfindingEditor{
 		bool graphVisualFoldout = false;
 
 		protected Color graphColor = Color.green;
-		protected Color unwalkableGridColor = Color.red;
+
 
 		public override void OnInspectorGUI (){
 
@@ -99,7 +99,7 @@ namespace NP.aStarPathfindingEditor{
 		protected virtual void DrawGraphVisualProperties(){
 
 			graphColor = EditorGUILayout.ColorField ("VisualColor", graphColor);
-			unwalkableGridColor = EditorGUILayout.ColorField ("UnwalkableColor", unwalkableGridColor);
+
 		}
 
 		protected virtual void DrawMethodButton(){
